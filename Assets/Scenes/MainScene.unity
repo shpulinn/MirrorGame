@@ -8360,6 +8360,7 @@ MonoBehaviour:
   evaluationMethod: 0
   evaluationInterval: 3
   timeInterpolationGui: 0
+  lifetimeScope: {fileID: 2127165151}
 --- !u!1001 &1920143853
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -9371,8 +9372,7 @@ MonoBehaviour:
   parentReference:
     TypeName: 
   autoRun: 1
-  autoInjectGameObjects:
-  - {fileID: 5314959123318457583, guid: 3a51405e38833ca4dbd2b96220ab4dbb, type: 3}
+  autoInjectGameObjects: []
 --- !u!1001 &2131104304
 PrefabInstance:
   m_ObjectHideFlags: 0
