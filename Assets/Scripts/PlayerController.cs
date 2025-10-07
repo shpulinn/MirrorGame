@@ -19,6 +19,18 @@ public class PlayerController : NetworkBehaviour
     {
         _rb = GetComponent<Rigidbody>();
     }
+    
+    public override void OnStartLocalPlayer()
+    {
+        base.OnStartLocalPlayer();
+        
+        var scope = GetComponent<PlayerScope>();
+        
+        if (!scope) return;
+        
+        scope.Build();
+        scope.Container.Inject(this);
+    }
 
     private void Update()
     {
