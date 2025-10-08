@@ -1,10 +1,13 @@
 ﻿using Mirror;
+using TMPro;
 using UnityEngine;
 
 public class PlayerNicknameSync : NetworkBehaviour
 {
     [SyncVar(hook = nameof(OnNicknameChanged))]
     public string nickname = "Player";
+
+    [SerializeField] private TextMeshProUGUI nameTextLabel;
 
     private void OnNicknameChanged(string oldNickname, string newNickname)
     {
@@ -14,10 +17,9 @@ public class PlayerNicknameSync : NetworkBehaviour
 
     private void UpdateNicknameDisplay()
     {
-        var nameText = GetComponentInChildren<TMPro.TextMeshProUGUI>();
-        if (nameText != null)
+        if (nameTextLabel != null)
         {
-            nameText.text = nickname;
+            nameTextLabel.text = nickname;
         }
     }
 }
