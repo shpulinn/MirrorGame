@@ -6,8 +6,10 @@ using VContainer;
 public class PlayerController : NetworkBehaviour
 {
     [SerializeField] private float moveSpeed = 5f;
+    [SerializeField] private float rotationSpeed = 120f;
     private Rigidbody _rb;
     private PlayerInput _input;
+    private PlayerNicknameSync _playerNicknameSync;
 
     [Inject]
     public void Construct(PlayerInput input)
@@ -18,6 +20,7 @@ public class PlayerController : NetworkBehaviour
     private void Awake()
     {
         _rb = GetComponent<Rigidbody>();
+        _playerNicknameSync = GetComponent<PlayerNicknameSync>();
     }
     
     public override void OnStartLocalPlayer()
@@ -25,11 +28,15 @@ public class PlayerController : NetworkBehaviour
         base.OnStartLocalPlayer();
         
         var scope = GetComponent<PlayerScope>();
-        
-        if (!scope) return;
-        
-        scope.Build();
-        scope.Container.Inject(this);
+        if (scope != null)
+        {
+            scope.Build();
+            _input = scope.Container.Resolve<PlayerInput>();
+        }
+        else
+        {
+            _input = new PlayerInput();
+        }
     }
 
     private void Update()
@@ -40,13 +47,13 @@ public class PlayerController : NetworkBehaviour
 
         if (_input.SendMessagePressed)
         {
-            // send message
+            CmdSendMessage($"Привет от {_playerNicknameSync.nickname}");
         }
     }
 
     private void FixedUpdate()
     {
-        if (!isLocalPlayer) return;
+        if (!isLocalPlayer || _input == null) return;
 
         if (_input.RotateInput == 0f && _input.MoveInput == 0f)
         {
@@ -54,9 +61,23 @@ public class PlayerController : NetworkBehaviour
             return;
         }
 
-        transform.Rotate(Vector3.up * (_input.RotateInput * 120f * Time.fixedDeltaTime));
-        _rb.velocity = transform.forward * (_input.MoveInput * moveSpeed);
+        transform.Rotate(Vector3.up * (_input.RotateInput * rotationSpeed * Time.fixedDeltaTime));
+        
+        Vector3 movement = transform.forward * (_input.MoveInput * moveSpeed * Time.fixedDeltaTime);
+        _rb.MovePosition(_rb.position + movement);
 
         _input.ResetOneFrameFlags();
+    }
+    
+    [Command]
+    private void CmdSendMessage(string message)
+    {
+        RpcShowMessage(message);
+    }
+
+    [ClientRpc]
+    private void RpcShowMessage(string message)
+    {
+        Debug.Log(message);
     }
 }
