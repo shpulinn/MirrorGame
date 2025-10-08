@@ -4,8 +4,9 @@ using VContainer.Unity;
 
 public class GameInstaller : LifetimeScope
 {
+    [SerializeField] private NetworkManagerCustom networkManager;
     protected override void Configure(IContainerBuilder builder)
     {
-        builder.RegisterComponentInHierarchy<NetworkManagerCustom>();
+        builder.RegisterComponent(networkManager).AsSelf();
     }
 }
